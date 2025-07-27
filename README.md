@@ -1,2 +1,2 @@
 # DBMS
-New repo
+New repository
