@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Geoapify Map</title>
+</head>
+<body>
+    <h1>Test Geoapify Map</h1>
+    <div id="test-div" style="width: 800px; height: 400px; border: 1px solid black;"></div>
+    
+    <script>
+        const GEOAPIFY_API_KEY = '2e582ecc460546f6a217bc46566ccdbc';
+        
+        // Test coordinates
+        const waypoints = [
+            {lon: -74.006, lat: 40.7128, name: 'New York'},
+            {lon: -118.2437, lat: 34.0522, name: 'Los Angeles'}
+        ];
+        
+        const centerLat = (waypoints[0].lat + waypoints[1].lat) / 2;
+        const centerLon = (waypoints[0].lon + waypoints[1].lon) / 2;
+        
+        // Simple marker syntax
+        const marker1 = `${waypoints[0].lon},${waypoints[0].lat};color:green;size:large`;
+        const marker2 = `${waypoints[1].lon},${waypoints[1].lat};color:red;size:large`;
+        
+        const staticMapUrl = `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=800&height=400&center=lonlat:${centerLon},${centerLat}&zoom=4&apiKey=${GEOAPIFY_API_KEY}&marker=${marker1}&marker=${marker2}`;
+        
+        console.log('Map URL:', staticMapUrl);
+        
+        const img = document.createElement('img');
+        img.src = staticMapUrl;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.onerror = function() {
+            console.error('Failed to load map image');
+            document.getElementById('test-div').innerHTML = '❌ Failed to load map';
+        };
+        img.onload = function() {
+            console.log('Map loaded successfully');
+        };
+        
+        document.getElementById('test-div').appendChild(img);
+    </script>
+</body>
+</html>
+

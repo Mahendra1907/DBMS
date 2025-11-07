@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login - CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-white min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-xl shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Customer Login</h1>
+                <p class="text-gray-600">Courier Management System</p>
+            </div>
+
+            <form id="userLoginForm" class="space-y-6">
+                <div>
+                    <label class="form-label">Email</label>
+                    <input type="email" id="email" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                <div id="error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-red-600 text-sm" id="error-message"></p>
+                </div>
+                <button type="submit" class="btn-primary w-full">Sign In</button>
+            </form>
+
+            <div class="mt-6 text-center text-sm">
+                <p class="text-gray-600 mb-2">New customer?</p>
+                <a href="user-register.html" class="text-blue-600 hover:text-blue-700 font-semibold">Create an account</a>
+                <span class="mx-2 text-gray-400">•</span>
+                <a href="index.html" class="text-blue-600 hover:text-blue-700">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('userLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            try {
+                const resp = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error || 'Login failed');
+                localStorage.setItem('userToken', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.href = 'user-dashboard.html';
+            } catch (err) {
+                errorDiv.classList.remove('hidden');
+                document.getElementById('error-message').textContent = err.message;
+            }
+        });
+    </script>
+</body>
+</html>
+
+

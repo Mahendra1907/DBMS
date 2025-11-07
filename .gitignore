@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.local
+.env.*
+
+# OS / editor
+.DS_Store
+*.log
+.vscode/
+
+# Build artifacts
+*.cache
+coverage/
+dist/
+build/
+
+# Database files
+courier_management.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+public/uploads/
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+node_modules/
+.env
+*.db
+*.sqlite
+*.log
+.DS_Store
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier Management System - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-800">CMS</h1>
+                    <span class="ml-2 text-gray-600">Courier Management System</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="index.html" class="text-blue-600 font-medium">Home</a>
+                    <a href="features.html" class="text-gray-600 hover:text-blue-600">Features</a>
+                    <a href="tracking.html" class="text-gray-600 hover:text-blue-600">Track Parcel</a>
+                    <a href="user-login.html" class="text-gray-600 hover:text-blue-600">Login</a>
+                    <a href="admin-login.html" class="text-gray-600 hover:text-blue-600">Admin</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-blue-50 to-white">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6 animate-fade-in">
+                Courier Management System
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
+                Our new Courier Management System (CMS) introduces a significant leap in operational efficiency by replacing outdated, paper-based processes with sophisticated, centralized digital management.
+            </p>
+            <div class="flex justify-center space-x-4 mb-16">
+                <a href="tracking.html" class="btn-primary">
+                    Track Your Parcel
+                </a>
+                <a href="user-login.html" class="btn-secondary">
+                    Login / Sign Up
+                </a>
+                <a href="features.html" class="btn-secondary">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Cards -->
+    <section class="py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-8" id="featureCards">
+                <!-- Feature Card 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Digital Automation</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Moves all key details—customer info, parcel status, delivery updates—from paper to a single, secure digital platform.
+                    </p>
+                </div>
+
+                <!-- Feature Card 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Real-Time Tracking</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Enables instant parcel tracking, minimizing confusion and delay for both staff and end customers.
+                    </p>
+                </div>
+
+                <!-- Feature Card 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Accuracy & Efficiency</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Reduces human error significantly, saving time and ensuring data integrity across all operations.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusion Section -->
+    <section class="py-16 px-4 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <p class="text-lg text-gray-600 leading-relaxed">
+                In essence, the system's novelty lies in its ability to 
+                <span class="text-blue-600 font-semibold">automate</span>, 
+                <span class="text-blue-600 font-semibold">accelerate</span>, and 
+                <span class="text-blue-600 font-semibold">elevate</span> 
+                the overall service quality and process management.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2024 Courier Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Animate feature cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 150);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
+

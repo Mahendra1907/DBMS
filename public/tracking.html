@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Parcel - Courier Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Geoapify Maps -->
+    <script src="https://maps.geoapify.com/v1/staticmap.js" type="text/javascript"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-800">CMS</h1>
+                    <span class="ml-2 text-gray-600">Courier Management System</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="index.html" class="text-gray-600 hover:text-blue-600">Home</a>
+                    <a href="features.html" class="text-gray-600 hover:text-blue-600">Features</a>
+                    <a href="tracking.html" class="text-blue-600 font-medium">Track Parcel</a>
+                    <a href="user-login.html" class="text-gray-600 hover:text-blue-600">Login</a>
+                    <a href="admin-login.html" class="text-gray-600 hover:text-blue-600">Admin</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tracking Section -->
+    <section class="py-16 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Track Your Parcel</h1>
+                <p class="text-xl text-gray-600">
+                    Enter your tracking ID to get real-time updates on your shipment
+                </p>
+            </div>
+
+            <!-- Tracking Form -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <form id="trackingForm" class="relative">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <input 
+                                type="text" 
+                                id="trackingId" 
+                                placeholder="Enter Tracking ID, Sender, or Receiver name (e.g., CMS001)"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                autocomplete="off"
+                                required
+                            >
+                            <div id="searchSuggestions" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <!-- Suggestions will be inserted here -->
+                            </div>
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="btn-primary whitespace-nowrap"
+                            id="trackButton"
+                        >
+                            <span id="trackButtonText">Track Parcel</span>
+                            <span id="trackButtonLoader" class="hidden spinner-small ml-2"></span>
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-3">
+                        💡 Try searching by tracking ID, sender name, or receiver name
+                    </p>
+                </form>
+            </div>
+
+            <!-- Results Display -->
+            <div id="results" class="hidden">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <!-- Current Location Section -->
+                    <div class="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-3xl font-bold text-gray-800 flex items-center">
+                                <svg class="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Where is My Item?
+                            </h2>
+                            <div id="current-status-badge" class="status-badge text-xl px-6 py-3"></div>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-6 mb-6">
+                            <div class="bg-white rounded-lg p-4 shadow-md">
+                                <p class="text-sm text-gray-500 mb-2">📍 Current Location</p>
+                                <p class="text-xl font-bold text-gray-800" id="current-location">Loading...</p>
+                                <p class="text-sm text-gray-600 mt-2" id="last-location-update"></p>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 shadow-md">
+                                <p class="text-sm text-gray-500 mb-2">🚚 Origin</p>
+                                <p class="text-xl font-bold text-gray-800" id="origin-display">-</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 shadow-md">
+                                <p class="text-sm text-gray-500 mb-2">🏁 Destination</p>
+                                <p class="text-xl font-bold text-gray-800" id="destination-display">-</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Journey Visualization -->
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Journey Progress</h3>
+                            <div id="journey-map" class="relative bg-white rounded-lg p-6 shadow-inner">
+                                <!-- Journey visualization will be inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- Interactive Map -->
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">📍 Route Visualization</h3>
+                            <div id="route-map" class="relative bg-white rounded-lg overflow-hidden shadow-inner" style="height: 400px;">
+                                <div class="flex items-center justify-center h-full text-gray-500">
+                                    <p>Map will load after tracking...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Google Map (optional) -->
+                        <div class="mt-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-700">🗺️ Google Map (optional)</h3>
+                                <span class="text-xs text-gray-500">Requires Google Maps API key</span>
+                            </div>
+                            <div id="google-map" class="relative bg-white rounded-lg overflow-hidden shadow-inner" style="height: 400px;">
+                                <div class="flex items-center justify-center h-full text-gray-500">
+                                    <p>Google Map will load after tracking...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parcel Details -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Parcel Details</h2>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Tracking ID</p>
+                                <p class="text-lg font-semibold text-gray-800" id="tracking-id"></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Current Status</p>
+                                <p class="text-lg font-semibold" id="status"></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Sender</p>
+                                <p class="text-lg text-gray-800" id="sender-name"></p>
+                                <p class="text-sm text-gray-600" id="sender-contact"></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Receiver</p>
+                                <p class="text-lg text-gray-800" id="receiver-name"></p>
+                                <p class="text-sm text-gray-600" id="receiver-contact"></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Origin</p>
+                                <p class="text-lg text-gray-800" id="origin"></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Destination</p>
+                                <p class="text-lg text-gray-800" id="destination"></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Date Created</p>
+                                <p class="text-lg text-gray-800" id="date-created"></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Last Updated</p>
+                                <p class="text-lg text-gray-800" id="last-updated"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tracking History -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Tracking History</h2>
+                        <div id="tracking-history" class="space-y-4">
+                            <!-- Tracking entries will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Display -->
+            <div id="error" class="hidden bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                <p class="text-red-600 font-semibold" id="error-message"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 px-4 mt-16">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2024 Courier Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="tracking.js"></script>
+</body>
+</html>
+

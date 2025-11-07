@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Login - CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-white min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-xl shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Delivery Agent Login</h1>
+            </div>
+            <form id="agentLoginForm" class="space-y-6">
+                <div>
+                    <label class="form-label">Email</label>
+                    <input id="email" type="email" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label">Password</label>
+                    <input id="password" type="password" class="form-input" required>
+                </div>
+                <div id="error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p id="error-message" class="text-red-600 text-sm"></p>
+                </div>
+                <button class="btn-primary w-full" type="submit">Sign In</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('agentLoginForm').addEventListener('submit', async (e)=>{
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resp = await fetch('/api/agent/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email,password})});
+            const data = await resp.json();
+            if(!resp.ok){ document.getElementById('error').classList.remove('hidden'); document.getElementById('error-message').textContent = data.error||'Login failed'; return; }
+            localStorage.setItem('agentToken', data.token);
+            window.location.href = 'agent-tasks.html';
+        });
+    </script>
+</body>
+</html>
+
+

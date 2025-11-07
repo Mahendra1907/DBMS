@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Courier Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-800">CMS Admin Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="adminName" class="text-gray-600"></span>
+                    <button id="logoutBtn" class="text-red-600 hover:text-red-700 font-medium">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Statistics Cards -->
+        <div class="grid md:grid-cols-4 gap-6 mb-8" id="statsCards">
+            <!-- Stats will be loaded dynamically -->
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px">
+                    <button onclick="showTab('parcels')" id="tab-parcels" class="tab-button active">
+                        Manage Parcels
+                    </button>
+                    <button onclick="showTab('couriers')" id="tab-couriers" class="tab-button">
+                        Manage Couriers
+                    </button>
+                    <button onclick="showTab('analytics')" id="tab-analytics" class="tab-button">
+                        Analytics
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Parcels Tab -->
+        <div id="parcels-tab" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Parcels</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="exportParcels('json')" class="btn-secondary text-sm">
+                            📥 Export JSON
+                        </button>
+                        <button onclick="exportParcels('csv')" class="btn-secondary text-sm">
+                            📥 Export CSV
+                        </button>
+                        <button onclick="openAddParcelModal()" class="btn-primary">
+                            + Add New Parcel
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search and Filter Section -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                            <input 
+                                type="text" 
+                                id="parcelSearch" 
+                                placeholder="Search by tracking ID, name, origin, destination..."
+                                class="form-input"
+                                onkeyup="debounceSearch()"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
+                            <select id="statusFilter" class="form-input" onchange="loadParcels()">
+                                <option value="">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Transit">In Transit</option>
+                                <option value="Delivered">Delivered</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                            <select id="sortBy" class="form-input" onchange="loadParcels()">
+                                <option value="date_created">Date Created</option>
+                                <option value="last_updated">Last Updated</option>
+                                <option value="tracking_id">Tracking ID</option>
+                                <option value="status">Status</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between">
+                        <span id="parcelCount" class="text-sm text-gray-600">Loading...</span>
+                        <button onclick="clearFilters()" class="text-sm text-blue-600 hover:text-blue-700">
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="parcelsLoading" class="text-center py-8">
+                    <div class="spinner mx-auto"></div>
+                    <p class="text-gray-500 mt-4">Loading parcels...</p>
+                </div>
+                
+                <div id="parcelsTableWrapper" class="hidden">
+                    <div class="table-container">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th class="cursor-pointer" onclick="toggleSort('tracking_id')">
+                                        Tracking ID ↕️
+                                    </th>
+                                    <th>Sender</th>
+                                    <th>Receiver</th>
+                                    <th>Origin</th>
+                                    <th>Destination</th>
+                                    <th class="cursor-pointer" onclick="toggleSort('status')">
+                                        Status ↕️
+                                    </th>
+                                    <th>Date Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parcelsTableBody">
+                                <!-- Parcels will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Couriers Tab -->
+        <div id="couriers-tab" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Couriers</h2>
+                    <button onclick="openAddCourierModal()" class="btn-primary">
+                        + Add New Courier
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Vehicle Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="couriersTableBody">
+                            <!-- Couriers will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics-tab" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Status Breakdown</h3>
+                    <canvas id="statusChart"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Parcels</h3>
+                    <div id="recentParcels" class="space-y-4">
+                        <!-- Recent parcels will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Parcel Modal -->
+    <div id="parcelModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800" id="parcelModalTitle">Add New Parcel</h2>
+                <button onclick="closeParcelModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form id="parcelForm" class="space-y-4">
+                <input type="hidden" id="parcelId">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Sender Name</label>
+                        <input type="text" id="senderName" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Receiver Name</label>
+                        <input type="text" id="receiverName" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Sender Email</label>
+                        <input type="email" id="senderEmail" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Receiver Email</label>
+                        <input type="email" id="receiverEmail" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Sender Phone</label>
+                        <input type="tel" id="senderPhone" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Receiver Phone</label>
+                        <input type="tel" id="receiverPhone" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Origin</label>
+                        <input type="text" id="origin" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Destination</label>
+                        <input type="text" id="destination" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Weight (kg)</label>
+                        <input type="number" step="0.01" id="weight" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Courier</label>
+                        <select id="courierId" class="form-input">
+                            <option value="">Select Courier</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Description</label>
+                    <textarea id="description" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeParcelModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Parcel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div id="statusModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Update Parcel Status</h2>
+                <button onclick="closeStatusModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form id="statusForm" class="space-y-4">
+                <input type="hidden" id="statusParcelId">
+                <div>
+                    <label class="form-label">Status</label>
+                    <select id="status" class="form-input" required>
+                        <option value="Pending">Pending</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Current Location</label>
+                    <input type="text" id="location" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label">Remarks</label>
+                    <textarea id="remarks" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeStatusModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Courier Modal -->
+    <div id="courierModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Add New Courier</h2>
+                <button onclick="closeCourierModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form id="courierForm" class="space-y-4">
+                <div>
+                    <label class="form-label">Name</label>
+                    <input type="text" id="courierName" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label">Email</label>
+                    <input type="email" id="courierEmail" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label">Phone</label>
+                    <input type="tel" id="courierPhone" class="form-input">
+                </div>
+                <div>
+                    <label class="form-label">Vehicle Type</label>
+                    <input type="text" id="vehicleType" class="form-input" placeholder="e.g., Van, Bike, Truck">
+                </div>
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeCourierModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Courier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>
+

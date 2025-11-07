@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Courier Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-white min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-xl shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">CMS Admin</h1>
+                <p class="text-gray-600">Courier Management System</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="email" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input"
+                        placeholder="admin@cms.com"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <div id="error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-red-600 text-sm" id="error-message"></p>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="btn-primary w-full"
+                >
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <a href="index.html" class="text-blue-600 hover:text-blue-700 text-sm">
+                    ← Back to Home
+                </a>
+            </div>
+
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-xs text-gray-600 text-center">
+                    <strong>Demo Credentials:</strong><br>
+                    Email: admin@cms.com<br>
+                    Password: admin123
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-login.js"></script>
+</body>
+</html>
+

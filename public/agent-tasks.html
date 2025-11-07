@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Tasks - CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <h1 class="text-2xl font-bold text-gray-800">Agent Tasks</h1>
+                <button id="logoutBtn" class="text-red-600 hover:text-red-700">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="table-container">
+            <table class="min-w-full">
+                <thead>
+                    <tr>
+                        <th>Tracking</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Status</th>
+                        <th>Update</th>
+                    </tr>
+                </thead>
+                <tbody id="tasksBody">
+                    <tr><td colspan="5" class="text-center py-8 text-gray-500">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        function headers(){ return { 'Content-Type':'application/json', 'Authorization': `Bearer ${localStorage.getItem('agentToken')}`}; }
+
+        async function loadTasks(){
+            const resp = await fetch('/api/agent/tasks', { headers: headers() });
+            const items = await resp.json();
+            const body = document.getElementById('tasksBody');
+            if(!Array.isArray(items) || items.length===0){ body.innerHTML='<tr><td colspan="5" class="text-center py-8 text-gray-500">No assigned tasks</td></tr>'; return; }
+            body.innerHTML = items.map(p=>`
+                <tr>
+                    <td class="font-semibold text-blue-600">${p.tracking_id}</td>
+                    <td>${p.origin}</td>
+                    <td>${p.destination}</td>
+                    <td><span class="status-badge ${p.status==='Delivered'?'status-delivered':p.status==='In Transit'?'status-in-transit':'status-pending'}">${p.status}</span></td>
+                    <td>
+                        <button class="text-blue-600" onclick="openUpdate('${p.parcel_id}','${p.destination}')">Update</button>
+                        <button class="text-green-600" onclick="deliver('${p.parcel_id}')">Deliver (OTP)</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function openUpdate(parcelId, destination){
+            const status = prompt('Enter status (Pending, In Transit, Out for Delivery, Delivered):','In Transit');
+            if(!status) return;
+            const location = prompt('Current location:', destination || '');
+            const remarks = prompt('Remarks:','');
+            const resp = await fetch(`/api/agent/tasks/${parcelId}`, { method:'PUT', headers: headers(), body: JSON.stringify({ status, location, remarks }) });
+            const data = await resp.json();
+            if(!resp.ok){ alert(data.error||'Update failed'); return; }
+            loadTasks();
+        }
+
+        async function deliver(parcelId){
+            const otp = prompt('Enter delivery OTP from customer:');
+            if(!otp) return;
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = async ()=>{
+                const formData = new FormData();
+                formData.append('otp', otp);
+                if(fileInput.files[0]) formData.append('proof', fileInput.files[0]);
+                const resp = await fetch(`/api/agent/tasks/${parcelId}/deliver`, { method: 'POST', headers: { 'Authorization': headers()['Authorization'] }, body: formData });
+                const data = await resp.json();
+                if(!resp.ok){ alert(data.error||'Delivery failed'); return; }
+                alert('Delivery confirmed');
+                loadTasks();
+            };
+            fileInput.click();
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', ()=>{ localStorage.removeItem('agentToken'); window.location.href='agent-login.html';});
+        if(!localStorage.getItem('agentToken')) window.location.href='agent-login.html';
+        loadTasks();
+    </script>
+</body>
+</html>
+
+
