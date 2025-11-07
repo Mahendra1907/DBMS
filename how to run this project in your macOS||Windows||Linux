@@ -1,0 +1,23 @@
+Here’s the shortest path for others to run it locally:
+Prerequisites
+Node.js 18+ and npm
+macOS/Windows/Linux
+Setup
+Clone:
+git clone https://github.com/<username>/<repo>.git
+cd DBMS
+Install dependencies:
+npm install
+Initialize database:
+npm run init-db
+(Optional) Set env:
+Create .env with JWT_SECRET=any-strong-secret (server has a default if omitted)
+Run
+Start server:
+npm start
+Open:
+http://localhost:3000
+Login/Test
+Admin: admin@cms.com / admin123
+Create a customer: http://localhost:3000/user-register.html
+Track sample: CMS001 (from init data)
