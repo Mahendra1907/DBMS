@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 =======
-# Courier Management System (CMS)
+# ShipZen-Courier-Management(CM)
 
 A modern, responsive web application for managing courier operations digitally. The system automates courier processing, provides real-time tracking, and ensures accuracy and efficiency.
 
